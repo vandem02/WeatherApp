@@ -1,6 +1,14 @@
 const apiKey = "9ba2aa6acb365d4e64e2db58467190a6";
 var city;
 
+$(".col-9").hide()
+
+for (let i = 0; i < localStorage.length; i++) {
+  const key = localStorage.key(i);
+  const value = localStorage.getItem(key);
+  $("table").append(`<tr><td>${key}</td><td>${value}</td></tr>`);
+}
+
 function fetchWeather(cityName) {
   city = cityName;
   fetch("https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&units=imperial&appid=" + apiKey)
@@ -13,6 +21,8 @@ function fetchWeather(cityName) {
         return;
       }
 
+      $(".col-9").show()
+
       console.log(weatherData);
 
       var now = dayjs();
@@ -24,20 +34,13 @@ function fetchWeather(cityName) {
       $(".text-bg-primary").empty();
       $(".text-bg-primary").append(
         `<div class="card-body">
-        <h3 class="card-title">` +
-          city +
-          ` (` +
-          now.format("M/D/YYYY") +
-          `)</h3>
-        <img src="https://openweathermap.org/img/wn/` +
-          icon +
-          `@2x.png" alt=` +
-          conditions +
-          `>
-        <p class="card-text">Temp: ` + todayWeather.main.temp + `°F</p>
-        <p class="card-text">Wind speed: ` + todayWeather.wind.speed + ` mph</p>
-        <p class="card-text">Humidity: ` + todayWeather.main.humidity + `%</p>
-      </div>`
+          <h3 class="card-title">` + city + ` (` + now.format("M/D/YYYY") + `)</h3>
+          <img src="https://openweathermap.org/img/wn/` + icon + `@2x.png" alt=` + conditions + `>
+          <p><b>` + conditions + `</b></p>
+          <p class="card-text">Temp: ` + todayWeather.main.temp + `°F</p>
+          <p class="card-text">Wind speed: ` + todayWeather.wind.speed + ` mph</p>
+          <p class="card-text">Humidity: ` + todayWeather.main.humidity + `%</p>
+        </div>`
       );
 
       var fiveDayForecast = [];
@@ -52,13 +55,21 @@ function fetchWeather(cityName) {
 
       var count = 0;
       $(".text-bg-info").each(function () {
+        todayWeather = fiveDayForecast[count];
+        conditions = todayWeather.weather[0].main;
+        icon = todayWeather.weather[0].icon;
+
+        now = now.add(1, "day");
         $(this).empty();
         $(this).append(
-          `<div class="card-header">Header</div>
-            <div class="card-body">
-              <h5 class="card-title">Info card title</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>`
+          `<div class="card-body">
+            <h5 class="card-title">` + now.format("M/D/YYYY") + `</h5>
+            <img src="https://openweathermap.org/img/wn/` + icon + `@2x.png" alt=` + conditions + `>
+            <p><b>` + conditions + `</b></p>
+            <p class="card-text">Temp: ` + todayWeather.main.temp + `°F</p>
+            <p class="card-text">Wind speed: ` + todayWeather.wind.speed + ` mph</p>
+            <p class="card-text">Humidity: ` + todayWeather.main.humidity + `%</p>
+          </div>`
         );
         count++;
       });
