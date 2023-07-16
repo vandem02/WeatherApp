@@ -22,12 +22,12 @@
       <div class="row">
         <div class="col-3 vstack gap-2">
           <h2 class="mt-2">Search for a City:</h2>
-          <input id="city" type="text" class="form-control" placeholder="e.g. San Diego" />
+          <input id="city" type="text" class="form-control" placeholder="Chicago" />
           <button id="search" type="button" class="btn btn-primary">Search</button>
           <hr />
-          <button type="button" class="btn btn-secondary">Sample City</button>
+          <h4 id="recents">Recent Cities:</h4>
         </div>
-        <div class="col-9 border-start">
+        <div id="weather-panel" class="col-9 border-start">
           <div class="card text-bg-primary m-3 w-auto">
             <div class="card-body">
               <h3 class="card-title">Card title</h3>
@@ -75,6 +75,7 @@
             </div>
           </div>
         </div>
+        <div id="empty-panel" class="col-9 border-start"></div>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>

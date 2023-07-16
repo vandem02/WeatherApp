@@ -1,16 +1,17 @@
 const apiKey = "9ba2aa6acb365d4e64e2db58467190a6";
-var city;
 
-$(".col-9").hide()
+setInterval(function () {
+  if ($("#city").val()) $("#search").removeAttr("disabled");
+  else $("#search").attr("disabled", true);
+}, 1);
 
-for (let i = 0; i < localStorage.length; i++) {
+for (let i = localStorage.length - 1; i >= 0; i--) {
   const key = localStorage.key(i);
   const value = localStorage.getItem(key);
-  $("table").append(`<tr><td>${key}</td><td>${value}</td></tr>`);
+  addToHistory(value);
 }
 
 function fetchWeather(cityName) {
-  city = cityName;
   fetch("https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&units=imperial&appid=" + apiKey)
     .then(function (response) {
       return response.json();
@@ -21,9 +22,13 @@ function fetchWeather(cityName) {
         return;
       }
 
-      $(".col-9").show()
+      $("#city").val("");
 
-      console.log(weatherData);
+      $("#empty-panel").hide();
+      $("#weather-panel").show();
+
+      localStorage.setItem(cityName, cityName);
+      addToHistory(cityName);
 
       var now = dayjs();
 
@@ -34,12 +39,28 @@ function fetchWeather(cityName) {
       $(".text-bg-primary").empty();
       $(".text-bg-primary").append(
         `<div class="card-body">
-          <h3 class="card-title">` + city + ` (` + now.format("M/D/YYYY") + `)</h3>
-          <img src="https://openweathermap.org/img/wn/` + icon + `@2x.png" alt=` + conditions + `>
-          <p><b>` + conditions + `</b></p>
-          <p class="card-text">Temp: ` + todayWeather.main.temp + `°F</p>
-          <p class="card-text">Wind speed: ` + todayWeather.wind.speed + ` mph</p>
-          <p class="card-text">Humidity: ` + todayWeather.main.humidity + `%</p>
+          <h3 class="card-title">` +
+          cityName +
+          ` (` +
+          now.format("M/D/YYYY") +
+          `)</h3>
+          <img src="https://openweathermap.org/img/wn/` +
+          icon +
+          `@2x.png" alt=` +
+          conditions +
+          `>
+          <p><b>` +
+          conditions +
+          `</b></p>
+          <p class="card-text">Temp: ` +
+          todayWeather.main.temp +
+          `°F</p>
+          <p class="card-text">Wind speed: ` +
+          todayWeather.wind.speed +
+          ` mph</p>
+          <p class="card-text">Humidity: ` +
+          todayWeather.main.humidity +
+          `%</p>
         </div>`
       );
 
@@ -51,8 +72,6 @@ function fetchWeather(cityName) {
       fiveDayForecast.push(weatherData.list[32]);
       fiveDayForecast.push(weatherData.list[39]);
 
-      console.log(fiveDayForecast);
-
       var count = 0;
       $(".text-bg-info").each(function () {
         todayWeather = fiveDayForecast[count];
@@ -63,12 +82,26 @@ function fetchWeather(cityName) {
         $(this).empty();
         $(this).append(
           `<div class="card-body">
-            <h5 class="card-title">` + now.format("M/D/YYYY") + `</h5>
-            <img src="https://openweathermap.org/img/wn/` + icon + `@2x.png" alt=` + conditions + `>
-            <p><b>` + conditions + `</b></p>
-            <p class="card-text">Temp: ` + todayWeather.main.temp + `°F</p>
-            <p class="card-text">Wind speed: ` + todayWeather.wind.speed + ` mph</p>
-            <p class="card-text">Humidity: ` + todayWeather.main.humidity + `%</p>
+            <h5 class="card-title">` +
+            now.format("M/D/YYYY") +
+            `</h5>
+            <img src="https://openweathermap.org/img/wn/` +
+            icon +
+            `@2x.png" alt=` +
+            conditions +
+            `>
+            <p><b>` +
+            conditions +
+            `</b></p>
+            <p class="card-text">Temp: ` +
+            todayWeather.main.temp +
+            `°F</p>
+            <p class="card-text">Wind speed: ` +
+            todayWeather.wind.speed +
+            ` mph</p>
+            <p class="card-text">Humidity: ` +
+            todayWeather.main.humidity +
+            `%</p>
           </div>`
         );
         count++;
@@ -76,10 +109,19 @@ function fetchWeather(cityName) {
     });
 }
 
+function addToHistory(cityName) {
+  $("#" + cityName).remove()
+  var $button = $('<button id="' + cityName + '" type="button" class="btn btn-secondary">' + cityName + "</button>");
+  $button.click(function () {
+    fetchWeather(cityName);
+  });
+  $("#recents").after($button);
+}
+
 $("#search").click(function () {
   fetchWeather($("#city").val());
 });
 
 $("#city").on("keydown", function (e) {
-  if (e.which == 13) fetchWeather($(this).val());
+  if (e.which == 13 && $(this).val()) fetchWeather($(this).val());
 });
