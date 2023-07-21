@@ -110,8 +110,9 @@ function fetchWeather(cityName) {
 }
 
 function addToHistory(cityName) {
-  $("#" + cityName).remove() // Remove the searched city from the Recents list, if it exists
-  var $button = $('<button id="' + cityName + '" type="button" class="btn btn-secondary">' + cityName + "</button>");
+  const cityNameId = cityName.split(" ").join("-").toLowerCase()
+  $("#" + cityNameId).remove() // Remove the searched city from the Recents list, if it exists
+  var $button = $('<button id="' + cityNameId + '" type="button" class="btn btn-secondary">' + cityName + "</button>");
   $button.click(function () {
     fetchWeather(cityName);
   });
